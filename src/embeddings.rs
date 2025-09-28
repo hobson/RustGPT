@@ -1,6 +1,10 @@
+use rand::SeedableRng;
+use rand::rngs::StdRng;
+// StdRng::seed_from_u64(RAND_SEED); // Use any u64 value as seed
+
 use ndarray::{s, Array2};
 use rand_distr::{Normal, Distribution};
-use crate::{vocab::Vocab, llm::Layer, EMBEDDING_DIM, MAX_SEQ_LEN, adam::Adam};
+use crate::{vocab::Vocab, llm::Layer, EMBEDDING_DIM, MAX_SEQ_LEN, RAND_SEED, adam::Adam};
 
 pub struct Embeddings {
     pub token_embeddings: Array2<f32>,
@@ -25,6 +29,8 @@ impl Default for Embeddings {
 impl Embeddings {
 
     pub fn new(vocab: Vocab) -> Self {
+        StdRng::seed_from_u64(RAND_SEED); // Use any u64 value as seed
+
         Self {
             token_embeddings: Self::init_embeddings(vocab.words.len(), EMBEDDING_DIM),
             positional_embeddings: Self::init_positional_embeddings(MAX_SEQ_LEN, EMBEDDING_DIM),

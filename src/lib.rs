@@ -17,3 +17,5 @@ pub use llm::Layer;
 pub const MAX_SEQ_LEN: usize = 40;
 pub const EMBEDDING_DIM: usize = 32;
 pub const HIDDEN_DIM: usize = 32; 
+pub const MAX_PERCENT_LOSS_CHANGE: f32 = 5.0; 
+pub const RAND_SEED: u64 = 0;

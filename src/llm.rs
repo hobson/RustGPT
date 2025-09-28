@@ -7,6 +7,9 @@ use crate::output_projection::OutputProjection;
 use crate::EMBEDDING_DIM;
 use crate::HIDDEN_DIM;
 use crate::MAX_SEQ_LEN;
+
+const MAX_PERCENT_LOSS_CHANGE: f32 = 5.0;
+const LR_ALPHA: f32 = 0.5;
 use std::cmp::Ordering;
 pub trait Layer {
     fn layer_type(&self) -> &str;
@@ -126,13 +129,25 @@ impl LLM {
     }
 
     pub fn train(&mut self, data: Vec<&str>, epochs: usize, lr: f32) {
+        println!("Pre-training on {} examples for {} epochs with learning rate {}", 
+            data.len(), epochs, lr);
+
         let tokenized_data = data
             .iter()
-            .map(|input| (self.tokenize(input)))
+            .map(|input| self.tokenize(input))
             .collect::<Vec<Vec<usize>>>();
 
+        let mut prev_loss = 1000000.0;
+        let mut total_loss = prev_loss / 2.0;
+        let mut percent_change = total_loss * 100.0 / prev_loss - 100.0;
         for epoch in 0..epochs {
-            let mut total_loss = 0.0;
+            println!("Epoch {}: Loss = {:.4} ({:.1}%)", 
+                epoch, 
+                total_loss / tokenized_data.len() as f32,
+                percent_change as f32,
+                );
+            prev_loss = LR_ALPHA * prev_loss + (1.0 - LR_ALPHA) * total_loss;
+            total_loss = 0.0;
             for training_row in &tokenized_data {
                 if training_row.len() < 2 { continue; }
 
@@ -168,9 +183,14 @@ impl LLM {
 
                 if next_token == self.vocab.encode("</s>").unwrap() { continue; }
             }
-            
-            println!("Epoch {}: Loss = {:.4}", epoch, total_loss / tokenized_data.len() as f32);
+            percent_change = total_loss * 100.0 / prev_loss - 100.0;
+            if percent_change > MAX_PERCENT_LOSS_CHANGE { break; }
         }
+        println!("Epoch {}: Loss = {:.4} ({:.1}%)", 
+            epochs, 
+            total_loss / tokenized_data.len() as f32,
+            percent_change as f32,
+            );
     }
 
     pub fn tokenize(&self, text: &str) -> Vec<usize> {

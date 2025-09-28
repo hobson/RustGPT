@@ -5,6 +5,10 @@ use output_projection::OutputProjection;
 use transformer::TransformerBlock;
 use llm::LLM;
 use vocab::Vocab;
+use rand::SeedableRng;
+use rand::rngs::StdRng;
+// use crate::RAND_SEED;
+// StdRng::seed_from_u64(RAND_SEED); // Use any u64 value as seed
 
 mod llm;
 mod embeddings;
@@ -20,8 +24,18 @@ mod layer_norm;
 const MAX_SEQ_LEN: usize = 80;
 const EMBEDDING_DIM: usize = 128;
 const HIDDEN_DIM: usize = 256;
+const PRETRAIN_EPOCHS: usize = 70;
+const INSTRUCT_EPOCHS: usize = 70;
+const RAND_SEED: u64 = 0;
+use rand_distr::{Distribution, Normal};
+
+
 
 fn main() {
+    let mut rng = StdRng::seed_from_u64(RAND_SEED);
+    let normal = Normal::new(0.0, 1.0).unwrap();
+    println!("First normal rng(seed={}) sample: {}", RAND_SEED, normal.sample(&mut rng));
+ 
     // Mock input - test conversational format
     let string = String::from("User: How do mountains form?");
 
@@ -194,14 +208,12 @@ fn main() {
     println!("Output: {}", llm.predict(&string));
     
     println!("\n=== PRE-TRAINING MODEL ===");
-    println!("Pre-training on {} examples for {} epochs with learning rate {}", 
-             pretraining_data.len(), 100, 0.0005);
-    llm.train(pretraining_data, 100, 0.0005);
+    llm.train(pretraining_data, PRETRAIN_EPOCHS, 0.0005);
     
     println!("\n=== INSTRUCTION TUNING ===");
     println!("Instruction tuning on {} examples for {} epochs with learning rate {}", 
-             chat_training_data.len(), 100, 0.0001);
-    llm.train(chat_training_data, 100, 0.0001); // Much lower learning rate for stability
+             chat_training_data.len(), INSTRUCT_EPOCHS, 0.0001);
+    llm.train(chat_training_data, INSTRUCT_EPOCHS, 0.0001); // Much lower learning rate for stability
     
     println!("\n=== AFTER TRAINING ===");
     println!("Input: {}", string);

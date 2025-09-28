@@ -1,6 +1,10 @@
 use crate::adam::Adam;
 use crate::EMBEDDING_DIM;
 use ndarray::Array2;
+use rand::SeedableRng;
+use rand::rngs::StdRng;
+use crate::RAND_SEED;
+// StdRng::seed_from_u64(RAND_SEED); // Use any u64 value as seed
 use rand_distr::{Normal, Distribution};
 use crate::llm::Layer;
 use std::f32;
@@ -28,6 +32,7 @@ impl Default for SelfAttention {
 impl SelfAttention {
     /// Initializes a Transformer with random Q, K, V weights
     pub fn new(embedding_dim: usize) -> Self {
+        StdRng::seed_from_u64(RAND_SEED); // Use any u64 value as seed
         let mut rng = rand::rng();
         // Xavier/He initialization: std = sqrt(2 / fan_in)
         let std = (2.0 / embedding_dim as f32).sqrt();
