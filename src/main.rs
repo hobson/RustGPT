@@ -1,4 +1,3 @@
-use core::num;
 use std::{env::{self, Args}, io::Write};
 
 use embeddings::Embeddings;
@@ -23,15 +22,9 @@ mod output_projection;
 mod adam;
 mod layer_norm;
 
-const NUM_EPOCHS: usize = 100;
+const NUM_EPOCHS: usize = 68;
 const LR: f32 = 0.0005;
 
-// Use the constants from lib.rs
-const MAX_SEQ_LEN: usize = 80;
-const EMBEDDING_DIM: usize = 128;
-const HIDDEN_DIM: usize = 256;
-const PRETRAIN_EPOCHS: usize = 70;
-const INSTRUCT_EPOCHS: usize = 70;
 const RAND_SEED: u64 = 0;
 use rand_distr::{Distribution, Normal};
 
