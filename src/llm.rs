@@ -150,6 +150,10 @@ impl LLM {
             prev_loss = LR_ALPHA * prev_loss + (1.0 - LR_ALPHA) * total_loss;
             total_loss = 0.0;
             for training_row in &tokenized_data {
+                println!("training_row.len(): {}", training_row.len());
+                if 0 < training_row.len() && training_row.len() < 2 {
+                    println!("skipped training_row[0]:\n {}", training_row[0]);
+                }
                 if training_row.len() < 2 { continue; }
 
                 // 1. Slice input and targets
