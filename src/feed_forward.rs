@@ -27,8 +27,7 @@ pub struct FeedForward {
 impl FeedForward {
     /// Initialize a feedforward layer with random weights
     pub fn new(embedding_dim: usize, hidden_dim: usize) -> Self {
-        StdRng::seed_from_u64(RAND_SEED);
-        let mut rng = rand::rng();
+        let mut rng = StdRng::seed_from_u64(RAND_SEED);  // rand::rng();
         
         // Xavier/He initialization for w1: std = sqrt(2 / fan_in)
         let std_w1 = (2.0 / embedding_dim as f32).sqrt();

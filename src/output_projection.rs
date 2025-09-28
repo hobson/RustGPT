@@ -17,8 +17,7 @@ pub struct OutputProjection {
 impl OutputProjection {
     /// Initialize output layer with random weights and zero bias
     pub fn new(embedding_dim: usize, vocab_size: usize) -> Self {
-        StdRng::seed_from_u64(RAND_SEED); // Use any u64 value as seed
-        let mut rng = rand::rng();
+        let mut rng = StdRng::seed_from_u64(RAND_SEED);  // rand::rng();
         // Xavier/He initialization: std = sqrt(2 / fan_in)
         let std = (2.0 / embedding_dim as f32).sqrt();
         let normal = Normal::new(0.0, std).unwrap();

@@ -9,7 +9,8 @@ use crate::HIDDEN_DIM;
 use crate::MAX_SEQ_LEN;
 
 const MAX_PERCENT_LOSS_CHANGE: f32 = 5.0;
-const LR_ALPHA: f32 = 0.5;
+const LR_ALPHA: f32 = 0.3;
+
 use std::cmp::Ordering;
 pub trait Layer {
     fn layer_type(&self) -> &str;
@@ -137,7 +138,7 @@ impl LLM {
             .map(|input| self.tokenize(input))
             .collect::<Vec<Vec<usize>>>();
 
-        let mut prev_loss = 1000000.0;
+        let mut prev_loss = 3000.0;
         let mut total_loss = prev_loss / 2.0;
         let mut percent_change = total_loss * 100.0 / prev_loss - 100.0;
         for epoch in 0..epochs {

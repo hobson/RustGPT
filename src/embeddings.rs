@@ -29,8 +29,6 @@ impl Default for Embeddings {
 impl Embeddings {
 
     pub fn new(vocab: Vocab) -> Self {
-        StdRng::seed_from_u64(RAND_SEED); // Use any u64 value as seed
-
         Self {
             token_embeddings: Self::init_embeddings(vocab.words.len(), EMBEDDING_DIM),
             positional_embeddings: Self::init_positional_embeddings(MAX_SEQ_LEN, EMBEDDING_DIM),
@@ -41,13 +39,14 @@ impl Embeddings {
     }
 
     fn init_embeddings(vocab_size: usize, embedding_dim: usize) -> Array2<f32> {
-        let mut rng = rand::rng();
+        let mut rng = StdRng::seed_from_u64(RAND_SEED); // rand::rng();
+
         let normal = Normal::new(0.0, 0.02).unwrap(); // Increased for better learning
         Array2::from_shape_fn((vocab_size, embedding_dim), |_| normal.sample(&mut rng))
     }
 
     fn init_positional_embeddings(max_seq_len: usize, embedding_dim: usize) -> Array2<f32> {
-        let mut rng = rand::rng();
+        let mut rng = StdRng::seed_from_u64(RAND_SEED);  // rand::rng();
         let normal = Normal::new(0.0, 0.02).unwrap(); // Increased for better learning
         Array2::from_shape_fn((max_seq_len, embedding_dim), |_| normal.sample(&mut rng))
     }

@@ -32,7 +32,7 @@ use rand_distr::{Distribution, Normal};
 
 
 fn main() {
-    let mut rng = StdRng::seed_from_u64(RAND_SEED);
+    let mut rng = StdRng::seed_from_u64(RAND_SEED);  // rand::rng()
     let normal = Normal::new(0.0, 1.0).unwrap();
     println!("First normal rng(seed={}) sample: {}", RAND_SEED, normal.sample(&mut rng));
  
