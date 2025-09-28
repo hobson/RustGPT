@@ -1,6 +1,10 @@
+use rand::SeedableRng;
+use rand::rngs::StdRng;
+// StdRng::seed_from_u64(RAND_SEED); // Use any u64 value as seed
+
 use ndarray::{s, Array2};
 use rand_distr::{Normal, Distribution};
-use crate::{vocab::Vocab, llm::Layer, EMBEDDING_DIM, MAX_SEQ_LEN, adam::Adam};
+use crate::{vocab::Vocab, llm::Layer, EMBEDDING_DIM, MAX_SEQ_LEN, RAND_SEED, adam::Adam};
 
 pub struct Embeddings {
     pub token_embeddings: Array2<f32>,
@@ -35,13 +39,14 @@ impl Embeddings {
     }
 
     fn init_embeddings(vocab_size: usize, embedding_dim: usize) -> Array2<f32> {
-        let mut rng = rand::rng();
+        let mut rng = StdRng::seed_from_u64(RAND_SEED); // rand::rng();
+
         let normal = Normal::new(0.0, 0.02).unwrap(); // Increased for better learning
         Array2::from_shape_fn((vocab_size, embedding_dim), |_| normal.sample(&mut rng))
     }
 
     fn init_positional_embeddings(max_seq_len: usize, embedding_dim: usize) -> Array2<f32> {
-        let mut rng = rand::rng();
+        let mut rng = StdRng::seed_from_u64(RAND_SEED);  // rand::rng();
         let normal = Normal::new(0.0, 0.02).unwrap(); // Increased for better learning
         Array2::from_shape_fn((max_seq_len, embedding_dim), |_| normal.sample(&mut rng))
     }

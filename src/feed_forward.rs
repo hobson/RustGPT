@@ -1,6 +1,10 @@
 use ndarray::Array2;
 use ndarray::Axis;
-use ndarray::parallel::prelude::*;
+// use ndarray::parallel::prelude::*;
+use rand::SeedableRng;
+use rand::rngs::StdRng;
+use crate::RAND_SEED;
+// StdRng::seed_from_u64(RAND_SEED); // Use any u64 value as seed
 use rand_distr::{Normal, Distribution};
 use crate::{adam::Adam, llm::Layer};
 
@@ -24,7 +28,7 @@ pub struct FeedForward {
 impl FeedForward {
     /// Initialize a feedforward layer with random weights
     pub fn new(embedding_dim: usize, hidden_dim: usize) -> Self {
-        let mut rng = rand::rng();
+        let mut rng = StdRng::seed_from_u64(RAND_SEED);  // rand::rng();
         
         // Xavier/He initialization for w1: std = sqrt(2 / fan_in)
         let std_w1 = (2.0 / embedding_dim as f32).sqrt();

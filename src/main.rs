@@ -7,6 +7,10 @@ use output_projection::OutputProjection;
 use transformer::TransformerBlock;
 use llm::LLM;
 use vocab::Vocab;
+use rand::SeedableRng;
+use rand::rngs::StdRng;
+// use crate::RAND_SEED;
+// StdRng::seed_from_u64(RAND_SEED); // Use any u64 value as seed
 
 mod dataset_loader;
 mod llm;
@@ -21,6 +25,15 @@ mod layer_norm;
 
 const NUM_EPOCHS: usize = 100;
 const LR: f32 = 0.0005;
+
+// Use the constants from lib.rs
+const MAX_SEQ_LEN: usize = 80;
+const EMBEDDING_DIM: usize = 128;
+const HIDDEN_DIM: usize = 256;
+const PRETRAIN_EPOCHS: usize = 70;
+const INSTRUCT_EPOCHS: usize = 70;
+const RAND_SEED: u64 = 0;
+use rand_distr::{Distribution, Normal};
 
 fn main() {
     let mut args: Args = env::args();
@@ -37,7 +50,10 @@ fn main() {
     let lr = args.next()
         .map(|x| x.parse().unwrap_or(LR))
         .unwrap_or(LR);
-    
+    let mut rng = StdRng::seed_from_u64(RAND_SEED);  // rand::rng()
+    let normal = Normal::new(0.0, 1.0).unwrap();
+    println!("First normal rng(seed={}) sample: {}", RAND_SEED, normal.sample(&mut rng));
+ 
     // Mock input - test conversational format
     let string = String::from("User: How do mountains form?");
 
@@ -142,7 +158,8 @@ fn main() {
         num_epochs, 
         lr / 5.0
     ); // Much lower learning rate for stability
-    
+
+ 
     println!("\n=== AFTER TRAINING ===");
     println!("Input: {}", string);
     let result = llm.predict(&string);
